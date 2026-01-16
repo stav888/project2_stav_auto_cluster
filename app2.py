@@ -90,6 +90,13 @@ def preprocess(df_features: pd.DataFrame) -> np.ndarray:
     numeric_cols = df_features.select_dtypes(include=[np.number]).columns.tolist()
     categorical_cols = [c for c in df_features.columns if c not in numeric_cols]
 
+        # Fill NaN values BEFORE preprocessing
+    for col in numeric_cols:
+        df_features[col] = df_features[col].fillna(df_features[col].mean())
+
+    for col in categorical_cols:
+        df_features[col] = df_features[col].fillna('missing')
+
     preprocessor = ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), numeric_cols),
@@ -286,3 +293,4 @@ st.download_button(
     file_name=out_name,
     mime="text/csv",
 )
+
